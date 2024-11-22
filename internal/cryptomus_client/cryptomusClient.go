@@ -1,4 +1,4 @@
-package cryptomusClient
+package cryptomus_client
 
 import (
 	"crypto/md5"
@@ -51,14 +51,13 @@ func (c *CryptomusClient) CreateInvoice(payload *dto.CreateCryptomusInvoiceReque
 		return nil, err
 	}
 
-	var responseData *dto.CreateCryptomusInvoiceResponse
+	var responseData dto.CreateCryptomusInvoiceResponse
 
 	if err := json.Unmarshal(bytes, &responseData); err != nil {
 		return nil, err
 	}
 
-	return responseData, nil
-
+	return &responseData, nil
 }
 
 func (c *CryptomusClient) generateHeader(data []byte) http.Header {

@@ -6,8 +6,9 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
-	bot_client "proxyStoreServer/internal/botClient"
+	"proxyStoreServer/internal/bot_client"
 	"proxyStoreServer/internal/config"
+	"proxyStoreServer/internal/cryptomus_client"
 	"proxyStoreServer/internal/router"
 	"proxyStoreServer/internal/storage/postgres"
 )
@@ -30,14 +31,18 @@ func (app *App) Port() uint32 {
 }
 
 func New(config *config.Config, logger *slog.Logger) (*App, func()) {
-	botClient := bot_client.New(&config.Bot, &config.Application)
+	var (
+		botClient = bot_client.New(&config.Bot, &config.Application)
+		_         = cryptomus_client.New(&config.Cryptomus)
+	)
+
 	if err := botClient.SetWebHook(); err != nil {
-		log.Fatal(err)
+		log.Fatal("Failed to set webhook ", err)
 	}
 
 	db, err := postgres.New(&config.Database)
 	if err != nil {
-		log.Fatal("Failed to connect to database", err)
+		log.Fatal("Failed to connect to database ", err)
 	}
 
 	mux := router.New(config)

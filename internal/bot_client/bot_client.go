@@ -49,7 +49,7 @@ func (b *BotClient) SetWebHook() error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("Failed to set webhook, status code: %d", resp.Status)
+		return fmt.Errorf("Failed to set webhook, status code: %d", resp.StatusCode)
 	}
 
 	bytes, err := io.ReadAll(resp.Body)
@@ -63,7 +63,7 @@ func (b *BotClient) SetWebHook() error {
 		Description string `json:"description"`
 	}
 
-	var data *Data
+	var data Data
 
 	if err := json.Unmarshal(bytes, &data); err != nil {
 		return err

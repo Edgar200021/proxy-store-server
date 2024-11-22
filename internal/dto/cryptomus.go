@@ -46,8 +46,9 @@ type CreateCryptomusInvoiceResponse struct {
 type CryptomusPaymentInfoResponse struct {
 	State  int16 `json:"state"`
 	Result struct {
-		Uuid    string        `json:"uuid"`
-		OrderId string        `json:"order_id"`
-		Status  PaymentStatus `json:"status"`
+		Uuid    string          `json:"uuid"`
+		OrderId string          `json:"order_id"`
+		Amount  decimal.Decimal `json:"amount"`
+		Status  PaymentStatus   `json:"status"`
 	}
 }

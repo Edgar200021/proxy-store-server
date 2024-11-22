@@ -12,11 +12,13 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 )
 
 type Config struct {
 	Application ApplicationConfig `yaml:"application" env-required:"true"`
 	Database    DatabaseConfig    `yaml:"database" env-required:"true"`
+	Redis       RedisConfig       `yaml:"redis" env-required:"true"`
 	Bot         BotConfig         `yaml:"bot" env-required:"true"`
 	Cryptomus   CryptomusConfig   `yaml:"cryptomus" env-required:"true"`
 }
@@ -55,7 +57,6 @@ type DatabaseConfig struct {
 }
 
 func (c *DatabaseConfig) ConnectOptions() *pgxpool.Config {
-
 	var sslMode string
 
 	if *c.SslMode {
@@ -93,6 +94,21 @@ func (c *DatabaseConfig) ConnectOptions() *pgxpool.Config {
 	}
 
 	return dbConfig
+}
+
+type RedisConfig struct {
+	Host     string  `yaml:"host" env-required:"true"`
+	Port     uint    `yaml:"port" env-required:"true"`
+	Password *string `yaml:"password" env-required:"true"`
+	Database int     `yaml:"database" env-default:"0"`
+}
+
+func (c *RedisConfig) ConnectOptions() *redis.Options {
+	return &redis.Options{
+		Addr:     fmt.Sprintf("%s:%d", c.Host, c.Port),
+		Password: *c.Password,
+		DB:       c.Database,
+	}
 }
 
 func New() *Config {
